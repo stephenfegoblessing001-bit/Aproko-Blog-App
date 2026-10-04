@@ -1,0 +1,59 @@
+{% extends "common.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="col-9 col-md-6 m-auto shadow-sm my-4 p-4 rounded">
+
+    <h3 class="text-center mb-4">My Profile</h3>
+
+{% if profile.profile_picture %}
+    <div class="text-center mb-4">
+        <img src="{{ profile.profile_picture.url }}"
+             alt="Profile Picture"
+             class="rounded-circle"
+             width="120"
+             height="120">
+    </div>
+{% endif %}
+
+<div class="mb-3">
+    <strong>Username:</strong>
+    <span>{{ request.user.username }}</span>
+</div>
+
+    <div class="mb-3">
+        <strong>Email:</strong>
+        <span>{{ request.user.email }}</span>
+    </div>
+
+    <div class="mb-3">
+        <strong>First Name:</strong>
+        <span>{{ request.user.first_name }}</span>
+    </div>
+
+    <div class="mb-3">
+        <strong>Last Name:</strong>
+        <span>{{ request.user.last_name }}</span>
+    </div>
+
+    <div class="mb-3">
+        <strong>Address:</strong>
+        <span>{{ profile.address }}</span>
+    </div>
+
+    <hr>
+
+    <div class="d-flex gap-2">
+        <a href="{% url 'edit-profile' %}" class="btn btn-primary">
+            Edit Profile
+        </a>
+
+        <a href="{% url 'password_change' %}" class="btn btn-dark">
+            Change Password
+        </a>
+    </div>
+
+</div>
+
+{% endblock content %}

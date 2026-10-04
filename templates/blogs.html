@@ -1,0 +1,53 @@
+{% extends "common.html" %}
+    {% load static %}
+    {% block content %}
+
+    {% if blogs %}
+        <div class="container">
+            <h3 class="text-center my-3 lead fs-2">Blogs</h3>
+            <div class="d-flex gap-2 my-2">
+                <div class="">
+                    <a href="{% url "blogs" %}" class="btn btn-sm btn-outline-dark">All</a>
+                 </div>
+                {% for category in categories %}
+                <div class="">
+                    <a href="{% url 'blogs' %}?category={{ category.id }}" class="btn btn-sm btn-outline-dark"> {{category.name}}</a>
+                </div>
+                {% endfor %}
+            </div>
+            {% if request.user.is_superuser %}
+            <a href="{% url 'add-category' %}" class="btn btn-sm btn-dark my-2">
+    Add Category
+</a>
+{% endif %}
+
+
+            <div class="row">
+                {% for blog in blogs %}
+                <div class="col-md-4 mb-2">
+                    
+                    <div class="card container">
+                        {% if blog.thumbnail %}
+                        <img src="{{blog.thumbnail.url}}" class="card-img-top" alt="...">
+                        {% else %}
+                        <img src="..." class="card-img-top" alt="...">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{blog.title|upper}}</h5>
+                            <div class="card-text">
+                                <p>{{blog.content|truncatewords:10}}</p>
+                                <p><b>Category:</b> {{blog.category.name}}</p>
+                                <p><b>Author:</b> {{blog.author|default:"Anonymous"}}</p>
+                            </div>
+                            <a href="{% url "single-blog" blog.slug %}" class="text-black">read more</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <p>No Available blog</p>
+    {% endif %}
+
+    {% endblock content %}

@@ -1,0 +1,175 @@
+
+{% extends "common.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container my-5">
+    <div class="col-12 col-md-8 col-lg-6 p-3 mx-auto">
+
+        <h2 class="title mb-3">{{ blog.title|upper }}</h2>
+
+        <p>{{ blog.content }}</p>
+
+        <p><b>Category:</b> {{ blog.category.name }}</p>
+        <p><b>Author:</b> {{ blog.author.username }}</p>
+        <p>👁️ {{ blog.clicks }} views</p>
+        <p><b>Date:</b> {{ blog.created_at|timesince }} ago</p>
+
+        <hr>
+
+       <div class="d-flex align-items-center gap-4 my-3">
+
+    <!-- Like button -->
+    <form method="POST" action="{% url 'like-blog' blog.slug %}">
+        {% csrf_token %}
+        <button type="submit"
+                class="btn btn-link text-decoration-none p-0">
+            {% if user_liked %}
+                <span style="color: #e63950; font-size: 24px;">♥</span>
+            {% else %}
+                <span style="color: #777; font-size: 24px;">♡</span>
+            {% endif %}
+            <span class="text-dark">{{ blog.likes.count }}</span>
+        </button>
+    </form>
+
+    <!-- Comment button -->
+    <button type="button"
+            class="btn btn-link text-decoration-none p-0 text-dark"
+            data-bs-toggle="collapse"
+            data-bs-target="#commentSection"
+            aria-expanded="false"
+            aria-controls="commentSection">
+        <span style="font-size: 22px;">💬</span>
+        {{ comments.count }}
+    </button>
+
+</div>
+<div class="collapse mt-3" id="commentSection">
+    <h5>Comments ({{ comments.count }})</h5>
+
+    {% for comment in comments %}
+        <div class="mb-3">
+            <strong>{{ comment.user.username }}</strong>
+            <small class="text-muted">
+                {{ comment.created_at|timesince }} ago
+            </small>
+
+            <p class="mb-1">{{ comment.content|linebreaksbr }}</p>
+
+            {% if request.user == comment.user %}
+                <form method="POST"
+                      action="{% url 'delete-comment' comment.id %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-danger">
+                        Delete
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p class="text-muted">No comments yet.</p>
+    {% endfor %}
+
+    {% if request.user.is_authenticated %}
+        <form method="POST"
+              action="{% url 'add-comment' blog.slug %}">
+            {% csrf_token %}
+
+            <div class="input-group">
+                <textarea name="content"
+                          class="form-control"
+                          rows="2"
+                          placeholder="Write a comment..."
+                          aria-label="Write a comment"
+                          required></textarea>
+
+                <button type="submit"
+                        class="btn btn-primary"
+                        aria-label="Post comment">
+                    ➤
+                </button>
+            </div>
+        </form>
+    {% else %}
+        <p>
+            <a href="{% url 'login' %}">Log in</a> to comment.
+        </p>
+    {% endif %}
+</div>
+
+        <!-- Edit and Delete Buttons -->
+        {% if request.user.is_authenticated %}
+            {% if request.user.is_superuser or blog.author == request.user %}
+                <div class="d-flex gap-2 my-3">
+
+                    <a href="{% url 'edit-blog' blog.slug %}"
+                       class="btn btn-primary">
+                        Edit
+                    </a>
+
+                    <button type="button"
+                            class="btn btn-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#delete_blog_{{ blog.slug }}">
+                        Delete
+                    </button>
+
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade"
+                     id="delete_blog_{{ blog.slug }}"
+                     tabindex="-1"
+                     aria-hidden="true">
+
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Delete {{ blog.title }}
+                                </h5>
+
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                Are you sure you want to delete this blog post?
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        data-bs-dismiss="modal">
+                                    No
+                                </button>
+
+                                <form method="POST"
+                                      action="{% url 'delete-blog' blog.slug %}">
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="btn btn-danger">
+                                        Yes, Delete
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock content %}

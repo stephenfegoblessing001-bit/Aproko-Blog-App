@@ -1,0 +1,11 @@
+
+.title {
+    font-size: 1.5rem;
+    color: tomato;
+}
+
+.card-img-top {
+    height: 250px;
+    object-fit: cover;
+}
+

@@ -1,0 +1,43 @@
+{% extends "common.html" %}
+    {% load static %}
+    {% block content %}
+
+    <section class="container">
+        <h1>Welcome to Django class, {{request.user.username}}.</h1>
+        <img src="{% static "images/stall.jpeg" %}" alt="" height="300">
+    </section>
+
+    {% if blogs %}
+         <div class="container">
+            <h3 class= "text-center my-3">Featured blogs</h3>
+             <div class="row">
+                {% for blog in blogs  %}
+
+                <div class="col-md-4 mb-2">
+                    <div class="card container">
+                        {% if blog.thumbnail %}
+                        <img src="{{blog.thumbnail.url}}" class="card-img-top" alt="...">
+                        {% else %}
+                        <img src="..." class="card-img-top" alt="...">
+
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{blog.title|upper}}</h5>
+                            <div class="card-text">{{blog.content|truncatewords:10}}</p>
+                            <p><b>Category:</b> {{blog.category.name}}</p>
+                            <p><b>Author:</b> {{blog.author|default:"Anonymous"}}</p></div>
+                            <a href="{% url "single-blog" blog.slug %}"class="text-black">read more</a>
+
+                        </div>
+                    </div>
+                </div>
+               {% endfor %}
+                <a href="{% url "blogs" %}"class="text-center text-black my-3">View all</a>
+             </div>
+         </div>
+    {% else %}
+        <p> No Available blogs</p>
+    {% endif %}
+
+
+    {% endblock content %} 
