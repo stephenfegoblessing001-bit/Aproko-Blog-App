@@ -3,7 +3,11 @@
     {% block content %}
 
     <section class="container">
-        <h1>Welcome to Django class, {{request.user.username}}.</h1>
+        {% if request.user.is_authenticated %}
+    <h1>Welcome to Django class, {{ request.user.username }}.</h1>
+{% else %}
+    <h1>Welcome to Django class.</h1>
+{% endif %}
         <img src="{% static "images/stall.jpeg" %}" alt="" height="300">
     </section>
 
